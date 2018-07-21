@@ -1,0 +1,16 @@
+{
+  "name": "measurabl",
+  "version": "1.0.0",
+  "description": "Take home test",
+  "main": "./node_modules/http-server/bin/http-server",
+  "dependencies": {
+    "http-server": "^0.11.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "./node_modules/http-server/bin/http-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Measurabl Take Home Test</title>
+  </head>
+
+  <body>
+    <h1>VanillaJS Data Table!</h1>
+    <p>
+      Assumes avaiability of ES6 (Objects, Sets, Strings, Fetch, Promise)
+    </p>
+    <p>
+      If I had extra time, I'd unit test the `safeMerge` and `renderTable` functions first. This should be easy as they're pure functions.
+    </p>
+    <div id="renderTable"></div>
+  </body>
+
+  <script type="text/javascript">
+    let request_1 = fetch('request1.json').then(response => response.json());
+    let request_2 = fetch('request2.json').then(response => response.json());
+    
+    Promise.all([request_1, request_2]).then(function(responses) {
+      return safeMerge(responses[0], responses[1]);
+    }).then(function(response) {
+      let tableMarkup = renderTable(response);
+      document.getElementById("renderTable").innerHTML = tableMarkup;
+    }).catch(e => {
+      alert('Something went terribly wrong. Please try again later.');
+      console.log(e);
+    });
+    
+    //Generic function to merge two objects on an ID property
+    //input: Both parameters should be an array
+    //@returns {Array} containing merged results
+    function safeMerge(first, second) {
+      let results = {}; //holds merged results keyed on ID
+      
+      first.map(val => {
+        results[val.id] = val;
+      })
+      
+      second.map(val => {
+        if(!results[val.id]) {
+          results[val.id] = {};
+        }
+        
+        results[val.id] = Object.assign(results[val.id], val);
+      })
+      
+      return Object.values(results);
+    }
+    
+    //Generic function to render table data
+    //input: Array of objects
+    //@returns {String} HTML formatted table
+    function renderTable(data) {
+      let columns = new Set();
+      let htmlColumns = '';
+      let rows = '';
+      
+      //find unique column names
+      data.forEach(e => {
+        columns = new Set([...columns ,...Object.keys(e)]);
+      })
+      
+      //generate markup for header row
+      columns.forEach(e => {
+        htmlColumns += `<th>${e}</th>`;
+      })
+      
+      //generate markup for each row
+      data.forEach(row => {
+        let rowString = '';
+        columns.forEach(col => {
+          rowString += `<td>${row[col] ? row[col] : '--'}</td>`;
+        })
+        rows += `<tr>${rowString}</tr>`;
+      })
+      
+      //Concat header and rows for complete table markup
+      return `<table>
+                <tr>${htmlColumns}</tr>
+                ${rows}
+              </table>`;
+    }
+
+  </script>
+</html>
